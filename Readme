@@ -1,0 +1,58 @@
+
+
+
+Online repository install of the Anaconda distribution. E.g. to create a nightly built from the latest packages of the conda-forge repository. Or to build a machine learning docker container out of an alpine linux or debian slim base container image from scratch. Specifically without a complex overlay-filesystem out of multiple immutable layers, so that the image can also be run almost obsolescence free in a simple docker or podman environment, especially does not need a kubernetes virtual machine abstraction for production grade capability.
+
+
+Setup as follows.
+
+
+################################################
+#
+# Requirements/ Pre-Installation
+# 
+
+sudo apt update
+sudo apt install conda
+
+# respectively
+sudo dnf update
+sudo dnf install condathe 
+
+
+# Create env qdev; by default in folder /home/<user>/.conda/envs/qdev ; if you want modify the name of the env, you have to modify condaconfig as well  
+conda create --name qdev
+
+conda init
+
+
+################################################
+#
+# Conda Config
+# 
+
+./condaconfig.sh
+
+
+################################################
+#
+# Anaconda Repo Install 
+# 
+
+./anacondarepoinstall.py
+
+The install script will install Anaconda into the env qdev. 
+
+The install will - depending on you network connection - take some hours. The term "nightly" built can be taken by the word. ;-)
+
+
+################################################
+#
+# Known isuues
+# 
+
+- The conda package manager seems to have some kind of a garbage collection problem. When the conda package manager is run several times after another, the old memory allocation from the previous run is not released. So, the machine will run out of memory once. Therefore the parameter maximumpackages is set to 100. This seems to works for most 16GB machines. The order of the package list is individual on each run. So you have to run anacondarepoinstall.py multiple times to get all packages. 
+
+- The anaconda repo contains much more packages, than the anaconda distribution. Unfortunately, the package lists of the anaconda distribution and the miniconda distribution are not available publicly online. 
+
+
