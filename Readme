@@ -1,49 +1,69 @@
 
 
 
-Online repository install of the Anaconda distribution. E.g. to create a nightly built from the latest packages of the conda-forge repository. Or to build a machine learning docker container out of an alpine linux or debian slim base container image from scratch. Specifically without a complex overlay-filesystem out of multiple immutable layers, so that the image can also be run almost obsolescence free in a simple docker or podman environment, especially does not need a kubernetes virtual machine abstraction for production grade capability.
+Online repository install of the Anaconda distribution. E.g. to create a nightly built from the latest packages of the conda-forge repository. Or to build a machine learning docker container out of an alpine linux or debian slim base container image from scratch. Specifically without a complex overlay-filesystem out of multiple immutable layers, so that the image can also be run almost obsolescence free in a simple docker or podman environment, especially hopefully does not need a kubernetes virtual machine abstraction for production grade capability.
 
 
-Setup as follows.
+Setup as follows
 
 
 ################################################
 #
-# Requirements/ Pre-Installation
-# 
+# Install requirements
+#
 
+# install conda on Debian family Linux
 sudo apt update
 sudo apt install conda
 
-# respectively
+# install conda on Fedora family Linux
 sudo dnf update
-sudo dnf install condathe 
-
-
-# Create env qdev; by default in folder /home/<user>/.conda/envs/qdev ; if you want modify the name of the env, you have to modify condaconfig as well  
-conda create --name qdev
-
-conda init
+sudo dnf install conda 
 
 
 ################################################
 #
-# Conda Config
-# 
+# Auto config 1
+#
 
-./condaconfig.sh
+# requires internet connection
+./config1.sh
+
+
+################################################
+#
+# Manual config step
+#
+# expect virtualenv/ subuid/ subgid problems on Fedora <= V42 in this step 
+
+reboot
+
+# will call for sudo hisself
+conda init
+
+# requires internet connection
+conda update -n base -c conda-forge conda
+
+
+################################################
+#
+# Auto config 2
+#
+
+# requires internet connection
+./config2.sh
 
 
 ################################################
 #
 # Anaconda Repo Install 
-# 
+#
+# the install will take - depending on you network connection - some hours. So it usually gets a "nightly" built taken by the meaning of the word
 
-./anacondarepoinstall.py
+# requires internet connection
+python anacondarepoinstall.py
 
-The install script will install Anaconda into the env qdev. 
 
-The install will - depending on you network connection - take some hours. The term "nightly" built can be taken by the word. ;-)
 
 
 ################################################
@@ -51,8 +71,18 @@ The install will - depending on you network connection - take some hours. The te
 # Known isuues
 # 
 
-- The conda package manager seems to have some kind of a garbage collection problem. When the conda package manager is run several times after another, the old memory allocation from the previous run is not released. So, the machine will run out of memory once. Therefore the parameter maximumpackages is set to 100. This seems to works for most 16GB machines. The order of the package list is individual on each run. So you have to run anacondarepoinstall.py multiple times to get all packages. 
+- The anaconda distro (= fetchrelnotepackages(...) ) currently includes about 300 packages. The anaconda channel main (= fetchchannelpackages(...) ), however, currently contains about 7000 packages. Not all (latest versions of) the packages do work properly. Some are simply defective. E.g. torchvision.
 
-- The anaconda repo contains much more packages, than the anaconda distribution. Unfortunately, the package lists of the anaconda distribution and the miniconda distribution are not available publicly online. 
+- The conda package manager seems to have some kind of a garbage collection problem. When the conda package manager is run several times after another, the old memory allocation from the previous run is not released free. So, the machine will run out of memory once. Therefore the parameter maximumpackages parameter is limited 50. A hung-up conda package manager does not harm an anaconda installation (transactional design). Every run of anacondarepoinstall.py starts with another selection of 50 packages (unstable sort). Thus, multiple runs of anacondarepoinstall.py will iteratively install all installable anaconda packages, nevertheless, if the list of defectivepackagestoexclude is updated manually. 
+
+
+
+
+################################################
+#
+# Tips
+# 
+
+- Work like a "real" python programmer. Do not use ipython/ jupyter notebooks. That is kids play. ;-)
 
 
